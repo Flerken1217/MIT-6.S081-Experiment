@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "sysinfo.h"
 
 struct cpu cpus[NCPU];
 
@@ -282,6 +283,8 @@ fork(void)
 
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
+
+  np->tracemask = p->tracemask;
 
   // increment reference counts on open file descriptors.
   for(i = 0; i < NOFILE; i++)
@@ -693,3 +696,20 @@ procdump(void)
     printf("\n");
   }
 }
+
+// procnum 函数
+void
+procnum(uint64 *dst)
+{
+    *dst = 0;
+    struct proc *p;
+
+    for (p = proc; p < &proc[NPROC]; p++) {   // 指针运算
+        if (p->state != UNUSED)
+            (*dst)++;
+    }
+}
+
+
+
+
